@@ -15,11 +15,10 @@ class LoginViewController: UIViewController {
     private let userNameCorrect = "Alex"
     private let userPasswodCorrect = "123"
     
-    
-//    override func viewDidLoad() {
-//        super.viewDidLoad()
-//        // Do any additional setup after loading the view.
-//    }
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let welcomeVC = segue.destination as! WelcomeViewController
+        welcomeVC.userName = userNameField.text ?? ""
+    }
 
     @IBAction func logInButton() {
         
@@ -39,8 +38,6 @@ class LoginViewController: UIViewController {
             showAlert(title: "Password is incorrect", message: "Forgot Your Password?", field: userPasswordField)
             return
         }
-        
-        print("OK")
     }
    
     @IBAction func userNameButton(_ sender: UIButton) {
@@ -48,6 +45,11 @@ class LoginViewController: UIViewController {
     }
     @IBAction func passwordButton(_ sender: UIButton) {
         showAlert(title: "Your Password is", message: userPasswodCorrect, field: userPasswordField)
+    }
+    
+    @IBAction func unwind(for unwindSegue: UIStoryboardSegue, towards subsequentVC: LoginViewController) {
+      userNameField.text = ""
+      userPasswordField.text = ""
     }
 }
     
