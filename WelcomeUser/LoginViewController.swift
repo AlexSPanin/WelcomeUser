@@ -7,19 +7,39 @@
 
 import UIKit
 
-class LoginViewController: UIViewController {
+class LoginViewController: UIViewController, UITextFieldDelegate{
+
 
     @IBOutlet weak var userNameField: UITextField!
     @IBOutlet weak var userPasswordField: UITextField!
     
-    private let userNameCorrect = "Alex"
+    private let userNameCorrect = "alex"
     private let userPasswodCorrect = "123"
+    
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        
+        userNameField.delegate = self
+        userPasswordField.delegate = self
+        
+        userPasswordField.enablesReturnKeyAutomatically = true
+        userPasswordField.isSecureTextEntry = true
+        
+        }
+    
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super .touchesBegan(touches, with: event)
+        self.view.endEditing(true)
+    }
+
     
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let welcomeVC = segue.destination as! WelcomeViewController
         welcomeVC.userName = userNameField.text ?? ""
     }
 
+    
     @IBAction func logInButton() {
         
         guard userNameField.text != "" else {
@@ -30,9 +50,9 @@ class LoginViewController: UIViewController {
             showAlert(title: "User Name is incorrect", message: "Forgot Your User Name?", field: userNameField)
             return
         }
-         guard userPasswordField.text != "" else {
+        guard userPasswordField.text != "" else {
             showAlert(title: "Password is Empty", message: "Please enter your Password", field: userPasswordField)
-             return
+            return
         }
         guard userPasswordField.text == userPasswodCorrect else {
             showAlert(title: "Password is incorrect", message: "Forgot Your Password?", field: userPasswordField)
@@ -63,6 +83,20 @@ class LoginViewController: UIViewController {
             }
             alert.addAction(okAction)
             present(alert, animated: true)
+        }
+       
+        func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+
+                if textField.returnKeyType == .next {
+                    userNameField.resignFirstResponder()
+                    userPasswordField.becomeFirstResponder()
+                } else if textField.text != "" {
+                    
+                    userPasswordField.enablesReturnKeyAutomatically = false
+                    userPasswordField.resignFirstResponder()
+                    logInButton()
+                }
+            return true
         }
     }
     
