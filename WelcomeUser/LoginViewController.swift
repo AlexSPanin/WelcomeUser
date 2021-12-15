@@ -13,22 +13,19 @@ class LoginViewController: UIViewController, UITextFieldDelegate{
     @IBOutlet weak var userNameField: UITextField!
     @IBOutlet weak var userPasswordField: UITextField!
     
-    private let userNameCorrect = "user"
-    private let userPasswodCorrect = "123"
+    private let correctUser = (name: "user", password: "123")
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         userNameField.delegate = self
         userPasswordField.delegate = self
         
         userPasswordField.enablesReturnKeyAutomatically = true
         userPasswordField.isSecureTextEntry = true
     }
-    
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let welcomeVC = segue.destination as! WelcomeViewController
-        welcomeVC.userName = userNameField.text ?? ""
+        welcomeVC.userName.name = userNameField.text ?? ""
     }
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super .touchesBegan(touches, with: event)
@@ -36,44 +33,72 @@ class LoginViewController: UIViewController, UITextFieldDelegate{
     }
     
     @IBAction func logInButton() {
-        guard userNameField.text != "" else {
-            showAlert(title: "User Name is Empty", message: "Please enter your User Name", field: userNameField)
-            return
-        }
-        guard userNameField.text == userNameCorrect else {
-            showAlert(title: "User Name is incorrect", message: "Forgot Your User Name?", field: userNameField)
-            return
-        }
-        guard userPasswordField.text != "" else {
-            showAlert(title: "Password is Empty", message: "Please enter your Password", field: userPasswordField)
-            return
-        }
-        guard userPasswordField.text == userPasswodCorrect else {
-            showAlert(title: "Password is incorrect", message: "Forgot Your Password?", field: userPasswordField)
-            return
-        }
+        guard verificationName(name: userNameField.text, correct: correctUser.name) else { return }
+        
+        userNameField.resignFirstResponder()
+        userPasswordField.becomeFirstResponder()
+        userPasswordField.enablesReturnKeyAutomatically = true
+       
+        guard verificationPassword(password: userPasswordField.text, correct: correctUser.password) else { return }
         
         userNameField.becomeFirstResponder()
         userPasswordField.resignFirstResponder()
-        
         performSegue(withIdentifier: "goWelcome", sender: nil)
     }
     @IBAction func userNameButton(_ sender: UIButton) {
-        showAlert(title: "Your User Name is", message: userNameCorrect, field: userNameField)
+        showAlert(title: "Your User Name is", message: correctUser.name, field: userNameField)
     }
     @IBAction func passwordButton(_ sender: UIButton) {
-        showAlert(title: "Your Password is", message: userPasswodCorrect, field: userPasswordField)
+        showAlert(title: "Your Password is", message: correctUser.password, field: userPasswordField)
     }
     @IBAction func unwind(for unwindSegue: UIStoryboardSegue, towards subsequentVC: LoginViewController) {
         userNameField.text = ""
         userPasswordField.text = ""
     }
 }
-
 // MARK: - private methods and functions
 
 extension LoginViewController {
     
+    // MARK: - navigating through text fields
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        if textField.returnKeyType == .next && verificationName(name: userNameField.text, correct: correctUser.name) {
+            userNameField.resignFirstResponder()
+            userPasswordField.becomeFirstResponder()
+            userPasswordField.enablesReturnKeyAutomatically = true
+        } else if textField.text != "" && verificationPassword(password: userPasswordField.text, correct: correctUser.password) {
+            userPasswordField.enablesReturnKeyAutomatically = false
+            userPasswordField.resignFirstResponder()
+            logInButton()
+        }
+        return true
+    }
+    
+    // MARK: - name and password verification
+    
+    private func verificationName (name: String?, correct: String) -> Bool {
+        guard name != "" else {
+            showAlert(title: "User Name is Empty", message: "Please enter your User Name", field: userNameField)
+            return false
+        }
+        guard name == correct else {
+            showAlert(title: "User Name is incorrect", message: "Forgot Your User Name?", field: userNameField)
+            return false
+        }
+        return true
+    }
+    private func verificationPassword (password: String?, correct: String) -> Bool {
+        guard password != "" else {
+            showAlert(title: "Password is Empty", message: "Please enter your Password", field: userPasswordField)
+            return false
+        }
+        guard password == correct else {
+            showAlert(title: "Password is incorrect", message: "Forgot Your Password?", field: userPasswordField)
+            return false
+        }
+        return true
+    }
     // MARK: - error message
     
     private func showAlert(title: String, message: String, field: UITextField ) {
@@ -82,26 +107,8 @@ extension LoginViewController {
             field.text = ""
         }
         alertView.addAction(okAction)
-        present(alertView, animated: true)
-    }
-    
-    // MARK: - navigating through text fields
-    
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        if textField.returnKeyType == .next {
-            userNameField.resignFirstResponder()
-            userPasswordField.becomeFirstResponder()
-        } else if textField.text != "" {
-            userPasswordField.enablesReturnKeyAutomatically = false
-            userPasswordField.resignFirstResponder()
-            logInButton()
-        }
-        return true
-    }
-    
-        // MARK: - name and password verification
-    
-    private func verificationUser (name: String, password: String, c)
+        self.present(alertView, animated: true)
+    }    
 }
 
 
