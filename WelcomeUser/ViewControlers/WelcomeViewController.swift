@@ -13,8 +13,16 @@ class WelcomeViewController: UIViewController {
     
     var userName: (name: String?, password: String?)
     
-    private let startColor = UIColor(displayP3Red: 1.0, green: 0.0, blue: 0.0, alpha: 0.5)
-    private let finishColor = UIColor(displayP3Red: 0.5, green: 0.0, blue: 0.5, alpha: 0.5)
+    private let startColor = UIColor(
+        displayP3Red: 1.0,
+        green: 0.0,
+        blue: 0.0,
+        alpha: 0.5)
+    private let finishColor = UIColor(
+        displayP3Red: 0.5,
+        green: 0.0,
+        blue: 0.5,
+        alpha: 0.5)
     
     override func viewDidLoad() {
         super.viewDidLoad()
